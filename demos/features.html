@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<script src="../node_modules/pixi.js/bin/pixi.js"></script>
+	<script src="../src/PixiApp.js"></script>
+
+	<script>
+		function button(label, x, y, cb) {
+			var container = new PIXI.DisplayObjectContainer();
+
+			var bg = new PIXI.Graphics();
+			bg.beginFill(0x202020);
+			bg.drawRect(x+2,y+2,100,20);
+
+			bg.beginFill(0x80c0ff);
+			bg.drawRect(x+0,y+0,100,20);
+			container.addChild(bg);
+
+			var style={
+				fill: "#ffffff",
+				font: "bold 14px Arial"
+			};
+
+			var t=new PIXI.Text(label,style);
+			t.position.x=x+5;
+			t.position.y=y+2;
+			container.addChild(t);
+
+			container.interactive=true;
+			container.buttonMode=true;
+			container.click=cb;
+			container.hitArea=new PIXI.Rectangle(x,y,100,20);
+
+			app.addChild(container);
+		}
+
+		function draw() {
+			gfx.clear();
+			gfx.beginFill(0xc080ff);
+			gfx.drawRect(0,0,app.applicationWidth,app.applicationHeight);
+
+			gfx.beginFill(0xc0c0ff);
+			gfx.drawRect(5,5,app.applicationWidth-10,app.applicationHeight-10);
+
+			gfx.beginFill(0xc080ff);
+			gfx.drawRect(10,10,app.applicationWidth-20,app.applicationHeight-20);
+		}
+
+		var app = new PixiApp(400,400);
+		var gfx = new PIXI.Graphics();
+
+		app.addChild(gfx);
+		draw();
+
+		button("landscape",20,20,function() {
+			app.applicationWidth=640;
+			app.applicationHeight=360;
+
+			draw();
+		});
+
+		button("portrait",20,50,function() {
+			app.applicationWidth=360;
+			app.applicationHeight=640;
+
+			draw();
+		});
+
+		button("top",130,20,function() {
+			app.verticalAlign=PixiApp.TOP;
+		});
+
+		button("middle",130,50,function() {
+			app.verticalAlign=PixiApp.MIDDLE;
+		});
+
+		button("bottom",130,80,function() {
+			app.verticalAlign=PixiApp.BOTTOM;
+		});
+
+		button("left",240,20,function() {
+			app.horizontalAlign=PixiApp.LEFT;
+		});
+
+		button("center",240,50,function() {
+			app.horizontalAlign=PixiApp.CENTER;
+		});
+
+		button("right",240,80,function() {
+			app.horizontalAlign=PixiApp.RIGHT;
+		});
+
+		button("show all",20,120,function() {
+			app.scaleMode=PixiApp.SHOW_ALL;
+		});
+
+		button("no scale",20,150,function() {
+			app.scaleMode=PixiApp.NO_SCALE;
+		});
+
+		button("no border",20,180,function() {
+			app.scaleMode=PixiApp.NO_BORDER;
+		});
+	</script>
+</html>

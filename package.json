@@ -2,10 +2,6 @@
   "name": "PixiApp",
   "version": "0.0.1",
   "description": "Manage startup and mainloop of a PIXI.js application",
-  "main": "Gruntfile.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/limikael/PixiApp.git"
@@ -15,5 +11,10 @@
   "bugs": {
     "url": "https://github.com/limikael/PixiApp/issues"
   },
-  "homepage": "https://github.com/limikael/PixiApp"
+  "homepage": "https://github.com/limikael/PixiApp",
+  "devDependencies": {
+    "browserify": "^6.1.0",
+    "pixi.js": "^1.6.1",
+    "qsub": "0.0.6"
+  }
 }
