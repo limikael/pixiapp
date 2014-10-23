@@ -137,4 +137,6 @@ EventDispatcher.init = function(cls) {
 	cls.prototype.trigger = EventDispatcher.prototype.trigger;
 }
 
-module.exports = EventDispatcher;
+if (typeof module !== 'undefined') {
+	module.exports = EventDispatcher;
+}

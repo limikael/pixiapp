@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<script src="../node_modules/pixi.js/bin/pixi.js"></script>
+	<script src="../bin/pixiapp.js"></script>
+
+	<script>
+		var app = new PixiApp(320,320);
+
+		var text = new PIXI.Text("Hello PIXI.js", {fill: "#f00"});
+		text.position.x = 160;
+		text.position.y = 160;
+		app.addChild(text);
+
+		app.on("frame", function(time) {
+			text.rotation=time*.001;
+		});
+	</script>
+</html>

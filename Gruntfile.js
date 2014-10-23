@@ -11,6 +11,7 @@ module.exports = function(grunt) {
 			dist: {
 				src: [
 					"src/intro.js",
+					"src/EventDispatcher.js",
 					"src/ContentScaler.js",
 					"src/PixiApp.js",
 					"src/outro.js",

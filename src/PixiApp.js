@@ -16,6 +16,8 @@ function PixiApp(width, height) {
 PixiApp.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 PixiApp.prototype.constructor = PixiApp;
 
+EventDispatcher.init(PixiApp);
+
 PixiApp.TOP = ContentScaler.TOP;
 PixiApp.MIDDLE = ContentScaler.MIDDLE;
 PixiApp.BOTTOM = ContentScaler.BOTTOM;
@@ -120,6 +122,8 @@ PixiApp.prototype.onAnimationFrame = function(time) {
 		this.renderer.resize(this.getElementWidth(), this.getElementHeight());
 		this.sizeDirty = false;
 	}
+
+	this.trigger("frame", time);
 
 	this.renderer.render(this.stage);
 	//TWEEN.update(time);
