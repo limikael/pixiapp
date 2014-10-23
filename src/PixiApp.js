@@ -1,5 +1,8 @@
 /**
- *
+ * Manages the main loop and scaling of a PIXI application.
+ * Todo: * sad border
+ * Todo: visibleRect
+ * Todo: render and resize events
  */
 function PixiApp(width, height) {
 	PIXI.DisplayObjectContainer.call(this);
@@ -221,5 +224,46 @@ Object.defineProperty(PixiApp.prototype, "scaleMode", {
 	},
 	set: function(value) {
 		this.contentScaler.setScaleMode(value)
+	}
+});
+
+/**
+ * Get or set the minimum allowed scale value.
+ * @property minScale
+ */
+Object.defineProperty(PixiApp.prototype, "minScale", {
+	get: function() {
+		return this.contentScaler.minScale;
+	},
+	set: function(value) {
+		this.contentScaler.setMinScale(value)
+	}
+});
+
+/**
+ * Get or set the maximum allowed scale value.
+ * @property minScale
+ */
+Object.defineProperty(PixiApp.prototype, "maxScale", {
+	get: function() {
+		return this.contentScaler.maxScale;
+	},
+	set: function(value) {
+		this.contentScaler.setMaxScale(value)
+	}
+});
+
+/**
+ * Should there be a sad border around the content? I.e.
+ * should the content outside the application area be masked
+ * away?
+ * @property sadBorder
+ */
+Object.defineProperty(PixiApp.prototype, "sadBorder", {
+	get: function() {
+		return this.contentScaler.maskContentEnabled
+	},
+	set: function(value) {
+		this.contentScaler.setMaskContentEnabled(value);
 	}
 });

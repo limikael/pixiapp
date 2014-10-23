@@ -31,6 +31,12 @@
 			container.hitArea=new PIXI.Rectangle(x,y,100,20);
 
 			app.addChild(container);
+
+			var t=new PIXI.Text("this is actually outside",style);
+			t.position.x=0;
+			t.position.y=-20;
+
+			container.addChild(t);
 		}
 
 		function draw() {
@@ -89,16 +95,44 @@
 			app.horizontalAlign=PixiApp.RIGHT;
 		});
 
-		button("show all",20,120,function() {
+		button("show all",20,140,function() {
 			app.scaleMode=PixiApp.SHOW_ALL;
 		});
 
-		button("no scale",20,150,function() {
+		button("no scale",20,170,function() {
 			app.scaleMode=PixiApp.NO_SCALE;
 		});
 
-		button("no border",20,180,function() {
+		button("no border",20,200,function() {
 			app.scaleMode=PixiApp.NO_BORDER;
+		});
+
+		button("no max scale",130,140,function() {
+			app.maxScale=null;
+		});
+
+		button("max scale=1",130,170,function() {
+			app.maxScale=1;
+		});
+
+		button("max scale=2",130,200,function() {
+			app.maxScale=2;
+		});
+
+		button("no min scale",240,140,function() {
+			app.minScale=null;
+		});
+
+		button("min scale=.5",240,170,function() {
+			app.minScale=.5;
+		});
+
+		button("min scale=1",240,200,function() {
+			app.minScale=1;
+		});
+
+		button("toggle border",20,250,function() {
+			app.sadBorder=!app.sadBorder;
 		});
 	</script>
 </html>

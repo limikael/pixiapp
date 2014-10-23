@@ -19,6 +19,11 @@ function ContentScaler(content) {
 	this.verticalAlign = ContentScaler.MIDDLE;
 	this.horizontalAlign = ContentScaler.CENTER;
 	this.scaleMode = ContentScaler.SHOW_ALL;
+
+	this.minScale = -1;
+	this.maxScale = -1;
+
+	this.maskContentEnabled = false;
 }
 
 ContentScaler.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
@@ -37,12 +42,41 @@ ContentScaler.NO_SCALE = "noScale";
 ContentScaler.SHOW_ALL = "showAll";
 
 /**
+ * Should the content be masked?
+ * @method setMaskContentEnabled
+ */
+ContentScaler.prototype.setMaskContentEnabled = function(value) {
+	this.maskContentEnabled = value;
+	this.updateScale();
+}
+
+/**
+ * Set minimum value for scale.
+ * @method setMinScale
+ */
+ContentScaler.prototype.setMinScale = function(minScale) {
+	this.minScale = minScale;
+	this.updateScale();
+}
+
+/**
+ * Set maximum value for scale.
+ * @method setMaxScale
+ */
+ContentScaler.prototype.setMaxScale = function(maxScale) {
+	this.maxScale = maxScale;
+	this.updateScale();
+}
+
+/**
  * Set content to use.
  * @method setContent
  */
 ContentScaler.prototype.setContent = function(content) {
-	this.content = content;
+	if (this.content)
+		throw new Error("Content already set.");
 
+	this.content = content;
 	this.addChild(this.content);
 
 	if (this.theMask) {
@@ -51,7 +85,7 @@ ContentScaler.prototype.setContent = function(content) {
 	}
 
 	this.theMask = new PIXI.Graphics();
-	//this.addChild(this.theMask);
+	this.addChild(this.theMask);
 
 	this.updateScale();
 }
@@ -127,6 +161,12 @@ ContentScaler.prototype.updateScale = function() {
 			scale = this.screenHeight / this.contentHeight;
 	}
 
+	if (this.minScale > 0 && scale < this.minScale)
+		scale = this.minScale;
+
+	if (this.maxScale > 0 && scale > this.maxScale)
+		scale = this.maxScale;
+
 	this.content.scale.x = scale;
 	this.content.scale.y = scale;
 
@@ -158,10 +198,13 @@ ContentScaler.prototype.updateScale = function() {
 	var bottom = r.y + r.height;
 
 	this.theMask.clear();
-	this.theMask.beginFill();
-	this.theMask.drawRect(0, 0, this.screenWidth, r.y);
-	this.theMask.drawRect(0, 0, r.x, this.screenHeight);
-	this.theMask.drawRect(right, 0, this.screenWidth - right, this.screenHeight);
-	this.theMask.drawRect(0, bottom, this.screenWidth, this.screenHeight - bottom);
-	this.theMask.endFill();
+
+	if (this.maskContentEnabled) {
+		this.theMask.beginFill();
+		this.theMask.drawRect(0, 0, this.screenWidth, r.y);
+		this.theMask.drawRect(0, 0, r.x, this.screenHeight);
+		this.theMask.drawRect(right, 0, this.screenWidth - right, this.screenHeight);
+		this.theMask.drawRect(0, bottom, this.screenWidth, this.screenHeight - bottom);
+		this.theMask.endFill();
+	}
 }
