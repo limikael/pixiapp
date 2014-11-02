@@ -208,3 +208,18 @@ ContentScaler.prototype.updateScale = function() {
 		this.theMask.endFill();
 	}
 }
+
+/**
+ * Get visible rectangle.
+ * @method getVisibleRect
+ */
+ContentScaler.prototype.getVisibleRect = function() {
+	var x = -this.content.position.x / this.content.scale.x;
+	var y = -this.content.position.y / this.content.scale.y;
+
+	var width = this.screenWidth / this.content.scale.x;
+	var height = this.screenHeight / this.content.scale.y;
+	// this.content.position, this.content.position, this.screenWidth, this.screenHeight
+
+	return new PIXI.Rectangle(x, y, width, height);
+}

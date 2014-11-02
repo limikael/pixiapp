@@ -57,6 +57,12 @@
 		app.addChild(gfx);
 		draw();
 
+		app.on("resize",function() {
+			var v=app.visibleRect;
+
+			console.log("resize..."+v.x+","+v.y+" -> "+v.width+","+v.height);
+		});
+
 		button("landscape",20,20,function() {
 			app.applicationWidth=640;
 			app.applicationHeight=360;

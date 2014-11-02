@@ -360,6 +360,21 @@ ContentScaler.prototype.updateScale = function() {
 		this.theMask.endFill();
 	}
 }
+
+/**
+ * Get visible rectangle.
+ * @method getVisibleRect
+ */
+ContentScaler.prototype.getVisibleRect = function() {
+	var x = -this.content.position.x / this.content.scale.x;
+	var y = -this.content.position.y / this.content.scale.y;
+
+	var width = this.screenWidth / this.content.scale.x;
+	var height = this.screenHeight / this.content.scale.y;
+	// this.content.position, this.content.position, this.screenWidth, this.screenHeight
+
+	return new PIXI.Rectangle(x, y, width, height);
+}
 /**
  * Manages the main loop and scaling of a PIXI application.
  * Todo: * sad border
@@ -460,6 +475,7 @@ PixiApp.prototype.attachToElement = function(element) {
 	this.sizeDirty = false;
 
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
+	this.trigger("resize");
 }
 
 /**
@@ -500,6 +516,7 @@ PixiApp.prototype.onAnimationFrame = function(time) {
  */
 PixiApp.prototype.onWindowResize = function() {
 	this.sizeDirty = true;
+	this.trigger("resize");
 }
 
 /**
@@ -632,6 +649,23 @@ Object.defineProperty(PixiApp.prototype, "sadBorder", {
 	set: function(value) {
 		this.contentScaler.setMaskContentEnabled(value);
 	}
+});
+
+/**
+ * Gets the rectangle on the screen that is currently visible.
+ * The rectangle is represented in application coordinates.
+ * @property
+ */
+Object.defineProperty(PixiApp.prototype, "visibleRect", {
+	get: function() {
+		if (this.sizeDirty) {
+			this.updateContentScaler();
+			this.renderer.resize(this.getElementWidth(), this.getElementHeight());
+			this.sizeDirty = false;
+		}
+
+		return this.contentScaler.getVisibleRect();
+	},
 });
 if (typeof module !== 'undefined') {
 	module.exports = PixiApp;

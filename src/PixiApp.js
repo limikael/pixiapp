@@ -98,6 +98,7 @@ PixiApp.prototype.attachToElement = function(element) {
 	this.sizeDirty = false;
 
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
+	this.trigger("resize");
 }
 
 /**
@@ -138,6 +139,7 @@ PixiApp.prototype.onAnimationFrame = function(time) {
  */
 PixiApp.prototype.onWindowResize = function() {
 	this.sizeDirty = true;
+	this.trigger("resize");
 }
 
 /**
@@ -270,4 +272,21 @@ Object.defineProperty(PixiApp.prototype, "sadBorder", {
 	set: function(value) {
 		this.contentScaler.setMaskContentEnabled(value);
 	}
+});
+
+/**
+ * Gets the rectangle on the screen that is currently visible.
+ * The rectangle is represented in application coordinates.
+ * @property
+ */
+Object.defineProperty(PixiApp.prototype, "visibleRect", {
+	get: function() {
+		if (this.sizeDirty) {
+			this.updateContentScaler();
+			this.renderer.resize(this.getElementWidth(), this.getElementHeight());
+			this.sizeDirty = false;
+		}
+
+		return this.contentScaler.getVisibleRect();
+	},
 });
