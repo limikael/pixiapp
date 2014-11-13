@@ -25,6 +25,8 @@ function PixiApp(width, height) {
 	this._applicationHeight = height;
 
 	setTimeout(this.onCheckReadyTimeout.bind(this), 0);
+
+	this.contentScaler = new ContentScaler(this);
 }
 
 PixiApp.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
@@ -86,6 +88,9 @@ PixiApp.prototype.attachToElement = function(element) {
 	if (!element)
 		throw new Error("That's not an element!");
 
+	if (typeof element == "string")
+		element = document.getElementById(element);
+
 	console.log("attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
 
 	this.containerElement = element;
@@ -118,7 +123,6 @@ PixiApp.prototype.attachToElement = function(element) {
 
 	this.stage = new PIXI.Stage(0);
 
-	this.contentScaler = new ContentScaler(this);
 	this.updateContentScaler();
 	this.stage.addChild(this.contentScaler);
 

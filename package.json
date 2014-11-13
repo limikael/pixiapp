@@ -1,18 +1,18 @@
 {
   "name": "pixiapp",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "bin/pixiapp.js",
   "description": "Manage startup and mainloop of a PIXI.js application",
   "repository": {
     "type": "git",
-    "url": "https://github.com/limikael/PixiApp.git"
+    "url": "https://github.com/limikael/pixiapp.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/limikael/PixiApp/issues"
+    "url": "https://github.com/limikael/pixiapp/issues"
   },
-  "homepage": "https://github.com/limikael/PixiApp",
+  "homepage": "https://github.com/limikael/pixiapp",
   "devDependencies": {
     "async": "^0.9.0",
     "browserify": "^6.1.0",
