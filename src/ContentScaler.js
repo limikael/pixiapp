@@ -1,6 +1,7 @@
 /**
  * Keep content with a logic size inside boundaries.
  * @class ContentScaler
+ * @internal
  */
 function ContentScaler(content) {
 	PIXI.DisplayObjectContainer.call(this);

@@ -20,6 +20,7 @@
  *     object.off("event", listener, this);
  *
  * @class EventDispatcher
+ * @internal
  */
 function EventDispatcher() {
 	this.listenerMap = {};

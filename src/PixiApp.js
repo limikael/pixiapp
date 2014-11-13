@@ -1,8 +1,22 @@
 /**
  * Manages the main loop and scaling of a PIXI application.
- * Todo: * sad border
- * Todo: visibleRect
- * Todo: render and resize events
+ * The intended way of using this class is to extend it, for example:
+ *
+ *     var PIXI = require("pixi.js");
+ *     var PixiApp = require("PixiApp");
+ *     var inherits = require("inherits");
+ *
+ *     function MyApp() {
+ *         PixiApp.call(this);
+ *
+ *         var t = new PIXI.Text("Hello PIXI.js!");
+ *         this.addChild(t);
+ *     }
+ *
+ *     inherits(MyApp, PixiApp);
+ *
+ *     new MyApp();
+ * @class PixiApp
  */
 function PixiApp(width, height) {
 	PIXI.DisplayObjectContainer.call(this);
@@ -17,6 +31,17 @@ PixiApp.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 PixiApp.prototype.constructor = PixiApp;
 
 EventDispatcher.init(PixiApp);
+
+/**
+ * Dispatched if the app is resized.
+ * @event resize
+ */
+
+/**
+ * Dispatched every frame before rendering.
+ * The time is send to the listening function as parameter.
+ * @event frame
+ */
 
 PixiApp.TOP = ContentScaler.TOP;
 PixiApp.MIDDLE = ContentScaler.MIDDLE;
@@ -49,7 +74,10 @@ PixiApp.prototype.onCheckReadyTimeout = function() {
 
 /**
  * Attach to an element in the document.
+ * If this function is not called, the app will be attached
+ * to entire browser window.
  * @method attachToElement
+ * @param element {DOMElement} The element to attach to.
  */
 PixiApp.prototype.attachToElement = function(element) {
 	if (this.attachedToElement)
@@ -103,6 +131,7 @@ PixiApp.prototype.attachToElement = function(element) {
 
 /**
  * Update the content scaler.
+ * @method updateContentScaler
  * @private
  */
 PixiApp.prototype.updateContentScaler = function() {
@@ -209,7 +238,7 @@ Object.defineProperty(PixiApp.prototype, "verticalAlign", {
 
 /**
  * How the application should be horizontally aligned in the window.
- * @property verticalAlign
+ * @property horizontalAlign
  */
 Object.defineProperty(PixiApp.prototype, "horizontalAlign", {
 	get: function() {
