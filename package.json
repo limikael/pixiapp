@@ -1,6 +1,7 @@
 {
-  "name": "PixiApp",
-  "version": "0.0.1",
+  "name": "pixiapp",
+  "version": "0.0.2",
+  "main": "bin/pixiapp.js",
   "description": "Manage startup and mainloop of a PIXI.js application",
   "repository": {
     "type": "git",
@@ -19,5 +20,8 @@
     "pixi.js": "^1.6.1",
     "qsub": "0.0.6",
     "jasmine-node": "^2.0.0-beta4"
+  },
+  "peerDependencies": {
+    "pixi.js": "^1.6.1"
   }
 }
