@@ -91,9 +91,10 @@ PixiApp.prototype.attachToElement = function(element) {
 	if (!element)
 		throw new Error("That's not an element!");
 
-	console.log("attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
+	console.log("** attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
 
 	this.containerElement = element;
+	this.attachedToElement = true;
 
 	var view;
 
@@ -131,8 +132,6 @@ PixiApp.prototype.attachToElement = function(element) {
 
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
 	this.trigger("resize");
-
-	this.attachedToElement = true;
 
 	console.log("attached...");
 }
