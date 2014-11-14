@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<script src="../node_modules/pixi.js/bin/pixi.js"></script>
+	<script src="../bin/pixiapp.js"></script>
+
+	<script>
+		function run() {
+			var app = new PixiApp(200,200);
+
+			var g = new PIXI.Graphics();
+			g.beginFill(0xff0000,1);
+			g.drawRect(0,0,200,200);
+			app.addChild(g);
+
+			var t=new PIXI.Text("hello",{fill: "#ff0"});
+			t.position.x=10;
+			t.position.y=10;
+			app.addChild(t);
+
+			app.attachToElement("theelement");
+		}
+	</script>
+	<body onload="run()">
+		<div id="theelement" 
+			style="width: 300px; height: 300px; background: #00ff00;">
+			hello
+		</div>
+	</body>
+</html>

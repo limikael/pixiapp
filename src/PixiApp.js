@@ -85,11 +85,11 @@ PixiApp.prototype.attachToElement = function(element) {
 	if (this.attachedToElement)
 		throw new Error("Already attached!");
 
-	if (!element)
-		throw new Error("That's not an element!");
-
 	if (typeof element == "string")
 		element = document.getElementById(element);
+
+	if (!element)
+		throw new Error("That's not an element!");
 
 	console.log("attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
 
@@ -131,6 +131,10 @@ PixiApp.prototype.attachToElement = function(element) {
 
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
 	this.trigger("resize");
+
+	this.attachedToElement = true;
+
+	console.log("attached...");
 }
 
 /**
