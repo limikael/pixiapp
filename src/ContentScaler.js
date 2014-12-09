@@ -25,6 +25,7 @@ function ContentScaler(content) {
 	this.maxScale = -1;
 
 	this.maskContentEnabled = false;
+	this.maskColor = 0x000000;
 }
 
 ContentScaler.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
@@ -48,6 +49,15 @@ ContentScaler.SHOW_ALL = "showAll";
  */
 ContentScaler.prototype.setMaskContentEnabled = function(value) {
 	this.maskContentEnabled = value;
+	this.updateScale();
+}
+
+/**
+ * Set color of the mask.
+ * @method setMaskColor
+ */
+ContentScaler.prototype.setMaskColor = function(value) {
+	this.maskColor = value;
 	this.updateScale();
 }
 
@@ -201,7 +211,7 @@ ContentScaler.prototype.updateScale = function() {
 	this.theMask.clear();
 
 	if (this.maskContentEnabled) {
-		this.theMask.beginFill();
+		this.theMask.beginFill(this.maskColor, 1);
 		this.theMask.drawRect(0, 0, this.screenWidth, r.y);
 		this.theMask.drawRect(0, 0, r.x, this.screenHeight);
 		this.theMask.drawRect(right, 0, this.screenWidth - right, this.screenHeight);

@@ -1,6 +1,6 @@
 {
   "name": "pixiapp",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "main": "bin/pixiapp.js",
   "description": "Manage startup and mainloop of a PIXI.js application",
   "repository": {
@@ -26,6 +26,6 @@
     "yuidocjs": "^0.3.50"
   },
   "peerDependencies": {
-    "pixi.js": "^1.6.1"
+    "pixi.js": "*"
   }
 }

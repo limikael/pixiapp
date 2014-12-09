@@ -31,12 +31,6 @@
 			container.hitArea=new PIXI.Rectangle(x,y,100,20);
 
 			app.addChild(container);
-
-			var t=new PIXI.Text("this is actually outside",style);
-			t.position.x=0;
-			t.position.y=-20;
-
-			container.addChild(t);
 		}
 
 		function draw() {
@@ -53,6 +47,16 @@
 
 		var app = new PixiApp(400,400);
 		var gfx = new PIXI.Graphics();
+
+		var style={
+			fill: "#808080",
+			font: "bold 14px Arial"
+		};
+
+		var t=new PIXI.Text("this is actually outside",style);
+		t.position.x=0;
+		t.position.y=-20;
+		app.addChild(t);
 
 		app.addChild(gfx);
 		draw();
@@ -138,7 +142,7 @@
 		});
 
 		button("toggle border",20,250,function() {
-			app.sadBorder=!app.sadBorder;
+			app.matte=!app.matte;
 		});
 	</script>
 </html>

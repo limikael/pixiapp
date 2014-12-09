@@ -23,6 +23,7 @@ function PixiApp(width, height) {
 
 	this._applicationWidth = width;
 	this._applicationHeight = height;
+	this._backgroundColor = 0xffffff;
 
 	setTimeout(this.onCheckReadyTimeout.bind(this), 0);
 
@@ -122,7 +123,7 @@ PixiApp.prototype.attachToElement = function(element) {
 	this.renderer = new PIXI.autoDetectRenderer(this.getElementWidth(), this.getElementHeight(), view);
 	this.containerElement.appendChild(this.renderer.view);
 
-	this.stage = new PIXI.Stage(0);
+	this.stage = new PIXI.Stage(this._backgroundColor);
 
 	this.updateContentScaler();
 	this.stage.addChild(this.contentScaler);
@@ -258,6 +259,20 @@ Object.defineProperty(PixiApp.prototype, "horizontalAlign", {
 
 /**
  * How should the application be scaled to fit the window?
+ * Available vaues are:
+ * <ul>
+ *   <li>
+ *     `PixiApp.SHOW_ALL` - Ensure that the whole application as defined by
+ *     `applicationWidth` and `applicationHeight` is visible on the screen.
+ *   </li>
+ *   <li>
+ *     `PixiApp.NO_BORDER` - Show as much as possible of the application,
+ *     but scale it so that there will be no border.
+ *   </li>
+ *   <li>
+ *     `PixiApp.NO_SCALE` - Don't scale the application at all.
+ *   </li>
+ * </ul>
  * @property scaleMode
  */
 Object.defineProperty(PixiApp.prototype, "scaleMode", {
@@ -296,12 +311,12 @@ Object.defineProperty(PixiApp.prototype, "maxScale", {
 });
 
 /**
- * Should there be a sad border around the content? I.e.
+ * Should there be a letterbox matte around the content? I.e.
  * should the content outside the application area be masked
  * away?
- * @property sadBorder
+ * @property matte
  */
-Object.defineProperty(PixiApp.prototype, "sadBorder", {
+Object.defineProperty(PixiApp.prototype, "matte", {
 	get: function() {
 		return this.contentScaler.maskContentEnabled
 	},
@@ -311,9 +326,23 @@ Object.defineProperty(PixiApp.prototype, "sadBorder", {
 });
 
 /**
+ * The color of the letterbox matte. This has effect only if the 
+ * letter box matte is enabled using the matte property.
+ * @property matteColor
+ */
+Object.defineProperty(PixiApp.prototype, "matteColor", {
+	get: function() {
+		return this.contentScaler.maskColor;
+	},
+	set: function(value) {
+		this.contentScaler.setMaskColor(value);
+	}
+});
+
+/**
  * Gets the rectangle on the screen that is currently visible.
  * The rectangle is represented in application coordinates.
- * @property
+ * @property visibleRect
  */
 Object.defineProperty(PixiApp.prototype, "visibleRect", {
 	get: function() {
@@ -325,4 +354,20 @@ Object.defineProperty(PixiApp.prototype, "visibleRect", {
 
 		return this.contentScaler.getVisibleRect();
 	},
+});
+
+/**
+ * The background color for the application.
+ * Default is 0xffffff, i.e. white.
+ * @property backgroundColor
+ */
+Object.defineProperty(PixiApp.prototype, "backgroundColor", {
+	get: function() {
+		return this._backgroundColor;
+	},
+	set: function(value) {
+		this._backgroundColor = value;
+		if (this.stage)
+			this.stage.setBackgroundColor(this._backgroundColor);
+	}
 });

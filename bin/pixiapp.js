@@ -178,6 +178,7 @@ function ContentScaler(content) {
 	this.maxScale = -1;
 
 	this.maskContentEnabled = false;
+	this.maskColor = 0x000000;
 }
 
 ContentScaler.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
@@ -201,6 +202,15 @@ ContentScaler.SHOW_ALL = "showAll";
  */
 ContentScaler.prototype.setMaskContentEnabled = function(value) {
 	this.maskContentEnabled = value;
+	this.updateScale();
+}
+
+/**
+ * Set color of the mask.
+ * @method setMaskColor
+ */
+ContentScaler.prototype.setMaskColor = function(value) {
+	this.maskColor = value;
 	this.updateScale();
 }
 
@@ -354,7 +364,7 @@ ContentScaler.prototype.updateScale = function() {
 	this.theMask.clear();
 
 	if (this.maskContentEnabled) {
-		this.theMask.beginFill();
+		this.theMask.beginFill(this.maskColor, 1);
 		this.theMask.drawRect(0, 0, this.screenWidth, r.y);
 		this.theMask.drawRect(0, 0, r.x, this.screenHeight);
 		this.theMask.drawRect(right, 0, this.screenWidth - right, this.screenHeight);
@@ -402,6 +412,7 @@ function PixiApp(width, height) {
 
 	this._applicationWidth = width;
 	this._applicationHeight = height;
+	this._backgroundColor = 0xffffff;
 
 	setTimeout(this.onCheckReadyTimeout.bind(this), 0);
 
@@ -501,7 +512,7 @@ PixiApp.prototype.attachToElement = function(element) {
 	this.renderer = new PIXI.autoDetectRenderer(this.getElementWidth(), this.getElementHeight(), view);
 	this.containerElement.appendChild(this.renderer.view);
 
-	this.stage = new PIXI.Stage(0);
+	this.stage = new PIXI.Stage(this._backgroundColor);
 
 	this.updateContentScaler();
 	this.stage.addChild(this.contentScaler);
@@ -675,12 +686,12 @@ Object.defineProperty(PixiApp.prototype, "maxScale", {
 });
 
 /**
- * Should there be a sad border around the content? I.e.
+ * Should there be a letterbox matte around the content? I.e.
  * should the content outside the application area be masked
  * away?
- * @property sadBorder
+ * @property matte
  */
-Object.defineProperty(PixiApp.prototype, "sadBorder", {
+Object.defineProperty(PixiApp.prototype, "matte", {
 	get: function() {
 		return this.contentScaler.maskContentEnabled
 	},
@@ -690,9 +701,23 @@ Object.defineProperty(PixiApp.prototype, "sadBorder", {
 });
 
 /**
+ * The color of the letterbox matte. This has effect only if the 
+ * letter box matte is enabled using the matte property.
+ * @property matteColor
+ */
+Object.defineProperty(PixiApp.prototype, "matteColor", {
+	get: function() {
+		return this.contentScaler.maskColor;
+	},
+	set: function(value) {
+		this.contentScaler.setMaskColor(value);
+	}
+});
+
+/**
  * Gets the rectangle on the screen that is currently visible.
  * The rectangle is represented in application coordinates.
- * @property
+ * @property visibleRect
  */
 Object.defineProperty(PixiApp.prototype, "visibleRect", {
 	get: function() {
@@ -704,6 +729,22 @@ Object.defineProperty(PixiApp.prototype, "visibleRect", {
 
 		return this.contentScaler.getVisibleRect();
 	},
+});
+
+/**
+ * The background color for the application.
+ * Default is 0xffffff, i.e. white.
+ * @property
+ */
+Object.defineProperty(PixiApp.prototype, "backgroundColor", {
+	get: function() {
+		return this._backgroundColor;
+	},
+	set: function(value) {
+		this._backgroundColor = value;
+		if (this.stage)
+			this.stage.setBackgroundColor(this._backgroundColor);
+	}
 });
 if (typeof module !== 'undefined') {
 	module.exports = PixiApp;
