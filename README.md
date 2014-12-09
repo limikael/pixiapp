@@ -3,6 +3,8 @@ PixiApp
 
 Easy setup and mainloop management for PIXI.js.
 
+Documentation is available here: http://limikael.altervista.org/pixiappdoc/
+
 Getting started with PIXI.js has never been easier! This is how you do it:
 
 ````html
