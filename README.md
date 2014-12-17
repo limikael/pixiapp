@@ -109,4 +109,4 @@ corner. If we want something to be as wide as the entire screen, we can make it 
 
 The visible rect will change if the aspect ratio of the window or screen changes, e.g. if the browser window gets resized
 or if a mobile devices changes orientation from horizontal to landscape. To get notifications about when this happens,
-you can listen to the `resize` event.
+we can listen to the `resize` event.
