@@ -3,7 +3,13 @@ PixiApp
 
 Easy setup and mainloop management for PIXI.js.
 
+* [Introduction](#introduction)
+* [Using npm and browserify](#using-npm-and-browserify)
+
 Documentation is available here: http://limikael.altervista.org/pixiappdoc/
+
+Introduction
+------------
 
 Getting started with PIXI.js has never been easier! This is how you do it:
 
@@ -21,14 +27,17 @@ Getting started with PIXI.js has never been easier! This is how you do it:
 </html>
 ````
 
+Using npm and browserify
+------------------------
+
 Or you can install it using `npm` and use browserify. In this case, first create a folder and
 initialize it as a npm project with:
 
     npm init
 
-Then install `PixiApp` and `inherits` as dependencies. This will automatically install PIXI.js as well.
+Then install `pixiapp` and `inherits` as dependencies. This will automatically install PIXI.js as well.
 
-    npm install --save-dev PixiApp
+    npm install --save-dev pixiapp
 
 You also need browserify on your system. This is global so you only need to do it once and not for 
 each project:
@@ -39,7 +48,7 @@ Now create your main javascipt file, e.g. main.js, where you create a class that
 
 ````javascript
     var PIXI = require("pixi.js");
-    var PixiApp = require("PixiApp");
+    var PixiApp = require("pixiapp");
     var inherits = require("inherits");
 
     function MyApp() {
@@ -66,3 +75,4 @@ And create a .html file to load the bundle:
 	<script src="main.bundle.js"></script>
 </html>
 ````
+
