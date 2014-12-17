@@ -81,11 +81,32 @@ And create a .html file to load the bundle:
 Resolution and scaling
 ----------------------
 
-As mentioned, PixiApp helps you with initializing PIXI.js, but it also helps you with create applications that work
-consistently across different screen resolutions. This is done in a way that is best suitable for "game like" applications
-that uses bitmapped graphics created in a certain resolution. In order to get the adaptation to different resolutions,
-PixiApp uses the concept of a "logic size" of the application. These are the values that gets passed to the constructor, as in:
+PixiApp also helps you create applications that work consistently across different screen resolutions.
+This is done in a way that is best suitable for "game like" applications that uses bitmapped graphics created in a
+certain resolution.
+
+In order to get the adaptation to different resolutions to work as automatic as possible, PixiApp uses the concept of a
+"logic size" of the application. This logic size is specified by the width and height that gets passed to the constructor,
+as in:
 
 ````javascript
-var app = new PixiApp(640,480);
+var app = new PixiApp(640, 480);
 ````
+
+Here, the logic size is 640 by 480 pixels. However, this does not mean that the application will be this size, it just 
+means that we can use this size when thinking about coordinates where we should put things in the application. If something
+is placed at coordinate 320 horizontally, then it will be at the middle of the screen. It also means that an image that
+is drawn in the resolution of 640x480 will be scaled to cover the whole screen.
+
+The logic size, 640x480 here, defines the area of the application that we can use to draw things and be sure that they will
+be visible. It doesn't necessarily define the area that is actually visible, since the app can be run on a screen or in 
+a window that has a different aspect ratio. We can say that the area covered by the coordinates 0,0 to 640,480 is our
+critical area, but the actual area will most likely be something else.
+
+To get the area that is actually displayed we can use the property `visibleRect`, which defines the rectangle of the 
+screen in logic coordinates. If we put something at coordinate `visibleRect.x`, `visibleRect.y` it will be at the top left
+corner. If we want something to be as wide as the entire screen, we can make it the width `visibleRect.width`.
+
+The visible rect will change if the aspect ratio of the window or screen changes, e.g. if the browser window gets resized
+or if a mobile devices changes orientation from horizontal to landscape. To get notifications about when this happens,
+you can listen to the `resize` event.
