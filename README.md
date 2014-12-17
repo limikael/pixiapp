@@ -6,7 +6,7 @@ Easy setup and mainloop management for PIXI.js.
 * [Introduction](#introduction)
 * [Using npm and browserify](#using-npm-and-browserify)
 
-Documentation is available here: http://limikael.altervista.org/pixiappdoc/
+Reference documentation is available [here](http://limikael.altervista.org/pixiappdoc/).
 
 Introduction
 ------------
