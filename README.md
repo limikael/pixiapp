@@ -30,8 +30,9 @@ Getting started with PIXI.js has never been easier! This is how you do it:
 Using npm and browserify
 ------------------------
 
-Or you can install it using `npm` and use browserify. In this case, first create a folder and
-initialize it as a npm project with:
+You can install PixiApp using `npm` and use browserify to build your code.
+This is recommended since it allows you to structure your code very nicely!
+In order to do this, first create a folder and initialize it as a npm project with:
 
     npm init
 
@@ -54,8 +55,8 @@ Now create your main javascipt file, e.g. main.js, where you create a class that
     function MyApp() {
         PixiApp.call(this);
 
-		var t = new PIXI.Text("Hello PIXI.js!");
-		this.addChild(t);
+	var t = new PIXI.Text("Hello PIXI.js!");
+	this.addChild(t);
     }
 
     inherits(MyApp, PixiApp);
