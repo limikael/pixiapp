@@ -5,6 +5,7 @@ Easy setup and mainloop management for PIXI.js.
 
 * [Introduction](#introduction)
 * [Using npm and browserify](#using-npm-and-browserify)
+* [Resolution and scaling](#resolution-and-scaling)
 
 Reference documentation is available [here](http://limikael.altervista.org/pixiappdoc/).
 
@@ -48,20 +49,20 @@ each project:
 Now create your main javascipt file, e.g. main.js, where you create a class that extends PixiApp:
 
 ````javascript
-    var PIXI = require("pixi.js");
-    var PixiApp = require("pixiapp");
-    var inherits = require("inherits");
+var PIXI = require("pixi.js");
+var PixiApp = require("pixiapp");
+var inherits = require("inherits");
 
-    function MyApp() {
-        PixiApp.call(this);
+function MyApp() {
+PixiApp.call(this);
 
-	var t = new PIXI.Text("Hello PIXI.js!");
-	this.addChild(t);
-    }
+var t = new PIXI.Text("Hello PIXI.js!");
+this.addChild(t);
+}
 
-    inherits(MyApp, PixiApp);
+inherits(MyApp, PixiApp);
 
-    new MyApp();
+new MyApp();
 ````
 
 Then create a bundle:
@@ -77,3 +78,14 @@ And create a .html file to load the bundle:
 </html>
 ````
 
+Resolution and scaling
+----------------------
+
+As mentioned, PixiApp helps you with initializing PIXI.js, but it also helps you with create applications that work
+consistently across different screen resolutions. This is done in a way that is best suitable for "game like" applications
+that uses bitmapped graphics created in a certain resolution. In order to get the adaptation to different resolutions,
+PixiApp uses the concept of a "logic size" of the application. These are the values that gets passed to the constructor, as in:
+
+````javascript
+var app = new PixiApp(640,480);
+````
