@@ -115,6 +115,7 @@ PixiApp.prototype.attachToElement = function(element) {
 
 		document.body.style.margin = 0;
 		document.body.style.padding = 0;
+		document.body.style.overflow = "hidden";
 
 		document.body.onresize = this.onWindowResize.bind(this);
 		window.onresize = this.onWindowResize.bind(this);
