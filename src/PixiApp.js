@@ -92,7 +92,7 @@ PixiApp.prototype.attachToElement = function(element) {
 	if (!element)
 		throw new Error("That's not an element!");
 
-	console.log("** attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
+	//console.log("** attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
 
 	this.containerElement = element;
 	this.attachedToElement = true;
@@ -109,7 +109,7 @@ PixiApp.prototype.attachToElement = function(element) {
 	view.style.padding = 0;
 
 	if (this.containerElement == document.body) {
-		console.log("style: " + document.documentElement.style.height);
+		//console.log("style: " + document.documentElement.style.height);
 
 		view.style.position = "fixed";
 
@@ -135,7 +135,7 @@ PixiApp.prototype.attachToElement = function(element) {
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
 	this.trigger("resize");
 
-	console.log("attached...");
+	//console.log("attached...");
 }
 
 /**

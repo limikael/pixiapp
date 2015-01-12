@@ -1,6 +1,6 @@
 {
   "name": "pixiapp",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "bin/pixiapp.js",
   "description": "Manage startup and mainloop of a PIXI.js application",
   "repository": {
