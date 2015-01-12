@@ -110,6 +110,6 @@ module.exports = function(grunt) {
 		console.log("  test          - Run unit tests.");
 		console.log("  concat        - Concat files.");
 		console.log("  doc           - Create docs.");
-		console.log("  publish-docs  - Upload docs.");
+		console.log("  publish-doc   - Upload docs.");
 	});
 };

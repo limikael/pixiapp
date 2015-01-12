@@ -481,7 +481,7 @@ PixiApp.prototype.attachToElement = function(element) {
 	if (!element)
 		throw new Error("That's not an element!");
 
-	console.log("** attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
+	//console.log("** attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
 
 	this.containerElement = element;
 	this.attachedToElement = true;
@@ -498,12 +498,13 @@ PixiApp.prototype.attachToElement = function(element) {
 	view.style.padding = 0;
 
 	if (this.containerElement == document.body) {
-		console.log("style: " + document.documentElement.style.height);
+		//console.log("style: " + document.documentElement.style.height);
 
 		view.style.position = "fixed";
 
 		document.body.style.margin = 0;
 		document.body.style.padding = 0;
+		document.body.style.overflow = "hidden";
 
 		document.body.onresize = this.onWindowResize.bind(this);
 		window.onresize = this.onWindowResize.bind(this);
@@ -523,7 +524,7 @@ PixiApp.prototype.attachToElement = function(element) {
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
 	this.trigger("resize");
 
-	console.log("attached...");
+	//console.log("attached...");
 }
 
 /**
@@ -648,6 +649,20 @@ Object.defineProperty(PixiApp.prototype, "horizontalAlign", {
 
 /**
  * How should the application be scaled to fit the window?
+ * Available vaues are:
+ * <ul>
+ *   <li>
+ *     `PixiApp.SHOW_ALL` - Ensure that the whole application as defined by
+ *     `applicationWidth` and `applicationHeight` is visible on the screen.
+ *   </li>
+ *   <li>
+ *     `PixiApp.NO_BORDER` - Show as much as possible of the application,
+ *     but scale it so that there will be no border.
+ *   </li>
+ *   <li>
+ *     `PixiApp.NO_SCALE` - Don't scale the application at all.
+ *   </li>
+ * </ul>
  * @property scaleMode
  */
 Object.defineProperty(PixiApp.prototype, "scaleMode", {
@@ -734,7 +749,7 @@ Object.defineProperty(PixiApp.prototype, "visibleRect", {
 /**
  * The background color for the application.
  * Default is 0xffffff, i.e. white.
- * @property
+ * @property backgroundColor
  */
 Object.defineProperty(PixiApp.prototype, "backgroundColor", {
 	get: function() {
