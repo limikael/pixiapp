@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<script src="../node_modules/pixi.js/bin/pixi.js"></script>
+	<script src="../bin/pixiapp.js"></script>
+
+	<script>
+		function button(label, x, y, cb) {
+			var container = new PIXI.DisplayObjectContainer();
+
+			var bg = new PIXI.Graphics();
+			bg.beginFill(0x202020);
+			bg.drawRect(x+2,y+2,100,20);
+
+			bg.beginFill(0x80c0ff);
+			bg.drawRect(x+0,y+0,100,20);
+			container.addChild(bg);
+
+			var style={
+				fill: "#ffffff",
+				font: "bold 14px Arial"
+			};
+
+			var t=new PIXI.Text(label,style);
+			t.position.x=x+5;
+			t.position.y=y+2;
+			container.addChild(t);
+
+			container.interactive=true;
+			container.buttonMode=true;
+			container.click=cb;
+			container.hitArea=new PIXI.Rectangle(x,y,100,20);
+
+			app.addChild(container);
+		}
+
+		var app = new PixiApp(1024,768);
+
+		var g = new PIXI.Graphics();
+		g.beginFill(0x008080,1);
+		g.drawRect(0,0,1024,768);
+		app.addChild(g);
+
+		var roundButton = PIXI.Sprite.fromImage("roundbutton.png");
+		roundButton.position.x=100;
+		roundButton.position.y=200;
+		app.addChild(roundButton);
+
+		var roundButtonPixiScale = PIXI.Sprite.fromImage("roundbutton.png");
+		roundButtonPixiScale.position.x=400;
+		roundButtonPixiScale.position.y=200;
+		roundButtonPixiScale.scale.x=.5;
+		roundButtonPixiScale.scale.y=.5;
+		app.addChild(roundButtonPixiScale);
+
+		var roundButtonSmall = PIXI.Sprite.fromImage("roundbutton_small.png");
+		roundButtonSmall.position.x=700;
+		roundButtonSmall.position.y=200;
+		app.addChild(roundButtonSmall);
+
+		var t=new PIXI.Text("Original Image");
+		t.position.x=100;
+		t.position.y=100;
+		app.addChild(t);
+
+		var t=new PIXI.Text("Scaled using\nPIXI");
+		t.position.x=400;
+		t.position.y=100;
+		app.addChild(t);
+
+		var t=new PIXI.Text("Pre-scaled using\nimage program");
+		t.position.x=700;
+		t.position.y=100;
+		app.addChild(t);
+
+		var t=new PIXI.Text("Supersampling");
+		t.position.x=100;
+		t.position.y=500;
+		app.addChild(t);
+
+		button("1",100,550,function() {
+			app.superSampling=1;
+		});
+
+		button("1.5",300,550,function() {
+			app.superSampling=1.5;
+		});
+
+		button("2",500,550,function() {
+			console.log("two...");
+			app.superSampling=2;
+		});
+
+		button("2.5",700,550,function() {
+			app.superSampling=2.5;
+		});
+
+	</script>
+</html>

@@ -413,6 +413,7 @@ function PixiApp(width, height) {
 	this._applicationWidth = width;
 	this._applicationHeight = height;
 	this._backgroundColor = 0xffffff;
+	this._superSampling = 1;
 
 	setTimeout(this.onCheckReadyTimeout.bind(this), 0);
 
@@ -461,7 +462,7 @@ PixiApp.prototype.onCheckReadyTimeout = function() {
 		return;
 	}
 
-	this.attachToElement(document.body);
+	this.attachToElement(); //document.body);
 }
 
 /**
@@ -472,14 +473,33 @@ PixiApp.prototype.onCheckReadyTimeout = function() {
  * @param element {DOMElement} The element to attach to.
  */
 PixiApp.prototype.attachToElement = function(element) {
+	this.attachedToBody = false;
+
 	if (this.attachedToElement)
 		throw new Error("Already attached!");
 
-	if (typeof element == "string")
+	if (typeof element == "string") {
 		element = document.getElementById(element);
+		if (!element)
+			throw new Error("That's not an element!");
+	}
 
-	if (!element)
-		throw new Error("That's not an element!");
+	if (!element) {
+		this.attachedToBody = true;
+
+		this.outerElement = document.createElement("div");
+		this.outerElement.style.left = "0";
+		this.outerElement.style.top = "0";
+		this.outerElement.style.position = "absolute";
+
+		this.outerElement.style.transformOrigin = "0 0 0";
+		this.outerElement.style.WebkitTransformOrigin = "0 0 0";
+		this.outerElement.style.MsTransformOrigin = "0 0 0";
+
+		document.body.appendChild(this.outerElement);
+
+		element = this.outerElement; //document.body;
+	}
 
 	//console.log("** attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
 
@@ -496,8 +516,12 @@ PixiApp.prototype.attachToElement = function(element) {
 
 	view.style.margin = 0;
 	view.style.padding = 0;
+	view.style.position = "absolute";
+	view.style.left = 0;
+	view.style.top = 0;
 
-	if (this.containerElement == document.body) {
+	if (this.attachedToBody) { //this.containerElement == document.body) {
+		//this.attachedToBody = true;
 		//console.log("style: " + document.documentElement.style.height);
 
 		view.style.position = "fixed";
@@ -533,6 +557,17 @@ PixiApp.prototype.attachToElement = function(element) {
  * @private
  */
 PixiApp.prototype.updateContentScaler = function() {
+	if (this.attachedToBody) {
+		var scale = 1 / this._superSampling;
+		var transformString = "scale(" + scale + ")";
+
+		console.log("setting transform: "+transformString);
+
+		this.outerElement.style.transform = transformString;
+		this.outerElement.style.WebkitTransform = transformString;
+		this.outerElement.style.MsTransform = transformString;
+	}
+
 	this.contentScaler.setContentSize(this._applicationWidth, this._applicationHeight);
 	this.contentScaler.setScreenSize(this.getElementWidth(), this.getElementHeight());
 }
@@ -575,8 +610,9 @@ PixiApp.prototype.onWindowResize = function() {
  * @private
  */
 PixiApp.prototype.getElementHeight = function() {
-	if (this.containerElement == document.body)
-		return window.innerHeight;
+	//	if (this.containerElement == document.body)
+	if (this.attachedToBody)
+		return window.innerHeight * this._superSampling;
 
 	return this.containerElement.clientHeight;
 }
@@ -587,8 +623,9 @@ PixiApp.prototype.getElementHeight = function() {
  * @private
  */
 PixiApp.prototype.getElementWidth = function() {
-	if (this.containerElement == document.body)
-		return window.innerWidth;
+	//	if (this.containerElement == document.body)
+	if (this.attachedToBody)
+		return window.innerWidth * this._superSampling;
 
 	return this.containerElement.clientWidth;
 }
@@ -716,7 +753,7 @@ Object.defineProperty(PixiApp.prototype, "matte", {
 });
 
 /**
- * The color of the letterbox matte. This has effect only if the 
+ * The color of the letterbox matte. This has effect only if the
  * letter box matte is enabled using the matte property.
  * @property matteColor
  */
@@ -759,6 +796,21 @@ Object.defineProperty(PixiApp.prototype, "backgroundColor", {
 		this._backgroundColor = value;
 		if (this.stage)
 			this.stage.setBackgroundColor(this._backgroundColor);
+	}
+});
+
+/**
+ * The super sampling factor.
+ * Default is 1, i.e. no super sampling.
+ * @property superSampling
+ */
+Object.defineProperty(PixiApp.prototype, "superSampling", {
+	get: function() {
+		return this._superSampling;
+	},
+	set: function(value) {
+		this._superSampling = value;
+		this.sizeDirty = true;
 	}
 });
 if (typeof module !== 'undefined') {
