@@ -9,6 +9,8 @@ Easy setup and mainloop management for PIXI.js.
 
 Reference documentation is available [here](http://limikael.altervista.org/pixiappdoc/).
 
+Demos are available [here](http://limikael.altervista.org/pixiappdemos/), use "view source".
+
 Introduction
 ------------
 
