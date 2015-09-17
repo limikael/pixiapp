@@ -19,7 +19,13 @@
  * @class PixiApp
  */
 function PixiApp(width, height) {
-	PIXI.DisplayObjectContainer.call(this);
+	PIXI.Container.call(this);
+
+	if (!width)
+		width = 500;
+
+	if (!height)
+		height = width;
 
 	this._applicationWidth = width;
 	this._applicationHeight = height;
@@ -31,7 +37,7 @@ function PixiApp(width, height) {
 	this.contentScaler = new ContentScaler(this);
 }
 
-PixiApp.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PixiApp.prototype = Object.create(PIXI.Container.prototype);
 PixiApp.prototype.constructor = PixiApp;
 
 EventDispatcher.init(PixiApp);
@@ -146,14 +152,12 @@ PixiApp.prototype.attachToElement = function(element) {
 	}
 
 	this.renderer = new PIXI.autoDetectRenderer(this.getElementWidth(), this.getElementHeight(), view);
+	this.renderer.backgroundColor = this._backgroundColor;
 	this.containerElement.appendChild(this.renderer.view);
 
-	this.stage = new PIXI.Stage(this._backgroundColor);
-
 	this.updateContentScaler();
-	this.stage.addChild(this.contentScaler);
 
-	this.renderer.render(this.stage);
+	this.renderer.render(this.contentScaler);
 	this.sizeDirty = false;
 
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
@@ -172,7 +176,7 @@ PixiApp.prototype.updateContentScaler = function() {
 		var scale = 1 / this._superSampling;
 		var transformString = "scale(" + scale + ")";
 
-		console.log("setting transform: "+transformString);
+		console.log("setting transform: " + transformString);
 
 		this.outerElement.style.transform = transformString;
 		this.outerElement.style.WebkitTransform = transformString;
@@ -199,7 +203,7 @@ PixiApp.prototype.onAnimationFrame = function(time) {
 
 	this.trigger("frame", time);
 
-	this.renderer.render(this.stage);
+	this.renderer.render(this.contentScaler);
 	//TWEEN.update(time);
 
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
@@ -221,7 +225,6 @@ PixiApp.prototype.onWindowResize = function() {
  * @private
  */
 PixiApp.prototype.getElementHeight = function() {
-	//	if (this.containerElement == document.body)
 	if (this.attachedToBody)
 		return window.innerHeight * this._superSampling;
 
@@ -234,7 +237,6 @@ PixiApp.prototype.getElementHeight = function() {
  * @private
  */
 PixiApp.prototype.getElementWidth = function() {
-	//	if (this.containerElement == document.body)
 	if (this.attachedToBody)
 		return window.innerWidth * this._superSampling;
 
@@ -405,8 +407,11 @@ Object.defineProperty(PixiApp.prototype, "backgroundColor", {
 	},
 	set: function(value) {
 		this._backgroundColor = value;
-		if (this.stage)
-			this.stage.setBackgroundColor(this._backgroundColor);
+		/*if (this.stage)
+			this.stage.setBackgroundColor(this._backgroundColor);*/
+
+		if (this.renderer)
+			this.renderer.backgroundColor = this._backgroundColor;
 	}
 });
 

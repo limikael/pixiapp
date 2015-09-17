@@ -1,6 +1,6 @@
 {
   "name": "pixiapp",
-  "version": "0.0.12",
+  "version": "3.0.0",
   "main": "bin/pixiapp.js",
   "description": "Manage startup and mainloop of a PIXI.js application",
   "repository": {
@@ -18,14 +18,15 @@
     "browserify": "^6.1.0",
     "grunt": "^0.4.5",
     "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-copy": "^0.8.1",
     "jasmine-node": "^2.0.0-beta4",
-    "pixi.js": "2.*.*",
+    "pixi.js": "3.0.7",
     "qsub": "0.0.6",
     "yuidoc-die-on-warnings": "^0.0.2",
     "yuidoc-filter-tags": "^0.0.2",
     "yuidocjs": "^0.3.50"
   },
   "peerDependencies": {
-    "pixi.js": "2.*.*"
+    "pixi.js": "3.*.*"
   }
 }

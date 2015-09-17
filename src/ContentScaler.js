@@ -4,7 +4,7 @@
  * @internal
  */
 function ContentScaler(content) {
-	PIXI.DisplayObjectContainer.call(this);
+	PIXI.Container.call(this);
 
 	this.contentWidth = 100;
 	this.contentHeight = 100;
@@ -28,7 +28,7 @@ function ContentScaler(content) {
 	this.maskColor = 0x000000;
 }
 
-ContentScaler.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+ContentScaler.prototype = Object.create(PIXI.Container.prototype);
 ContentScaler.prototype.constructor = ContentScaler;
 
 ContentScaler.TOP = "top";

@@ -5,6 +5,7 @@ var async = require("async");
 
 module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -18,6 +19,13 @@ module.exports = function(grunt) {
 					"src/outro.js",
 				],
 				dest: "bin/pixiapp.js"
+			}
+		},
+
+		copy: {
+			pixi: {
+				src: "node_modules/pixi.js/bin/pixi.js",
+				dest: "demos/pixi.js"
 			}
 		}
 	});
