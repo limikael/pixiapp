@@ -455,6 +455,21 @@ PixiApp.NO_SCALE = ContentScaler.NO_SCALE;
 PixiApp.SHOW_ALL = ContentScaler.SHOW_ALL;
 
 /**
+ * If the app is displayed in an html element, rather than
+ * on the whole screen, we can use this function to set the
+ * explicit width and height of the element. If we don't call
+ * this funciton, the element size will be autodetected. The
+ * autodetection doesn't work 100% reliably, however, if
+ * the underlying element is resized.
+ */
+PixiApp.prototype.setElementSize = function(width, height) {
+	this._explicitElementWidth = width;
+	this._explicitElementHeight = height;
+
+	this.sizeDirty = true;
+}
+
+/**
  * Check if it's time to attach ourselves.
  * @method onCheckReadyTimeout
  * @private
@@ -617,6 +632,9 @@ PixiApp.prototype.getElementHeight = function() {
 	if (this.attachedToBody)
 		return window.innerHeight * this._superSampling;
 
+	if (this._explicitElementHeight)
+		return this._explicitElementHeight;
+
 	return this.containerElement.clientHeight;
 }
 
@@ -628,6 +646,9 @@ PixiApp.prototype.getElementHeight = function() {
 PixiApp.prototype.getElementWidth = function() {
 	if (this.attachedToBody)
 		return window.innerWidth * this._superSampling;
+
+	if (this._explicitElementWidth)
+		return this._explicitElementWidth;
 
 	return this.containerElement.clientWidth;
 }
