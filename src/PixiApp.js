@@ -31,6 +31,7 @@ function PixiApp(width, height) {
 	this._applicationHeight = height;
 	this._backgroundColor = 0xffffff;
 	this._superSampling = 1;
+	this.autoAttach = true;
 
 	setTimeout(this.onCheckReadyTimeout.bind(this), 0);
 
@@ -89,6 +90,9 @@ PixiApp.prototype.setElementSize = function(width, height) {
 PixiApp.prototype.onCheckReadyTimeout = function() {
 	if (this.attachedToElement)
 		return;
+
+	if (!this.autoAttach)
+		return false;
 
 	if (!document.body) {
 		setTimeout(this.onCheckReadyTimeout.bind(this), 0);
