@@ -1,3 +1,11 @@
+var PIXI;
+
+if (window.PIXI)
+	PIXI = window.PIXI;
+
+else
+	PIXI = require("pixi.js");
+
 /**
  * Keep content with a logic size inside boundaries.
  * @class ContentScaler
@@ -27,6 +35,8 @@ function ContentScaler(content) {
 	this.maskContentEnabled = false;
 	this.maskColor = 0x000000;
 }
+
+module.exports = ContentScaler;
 
 ContentScaler.prototype = Object.create(PIXI.Container.prototype);
 ContentScaler.prototype.constructor = ContentScaler;

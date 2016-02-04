@@ -1,3 +1,13 @@
+var ContentScaler = require("./ContentScaler");
+var EventDispatcher = require("yaed");
+var PIXI;
+
+if (window.PIXI)
+	PIXI = window.PIXI;
+
+else
+	PIXI = require("pixi.js");
+
 /**
  * Manages the main loop and scaling of a PIXI application.
  * The intended way of using this class is to extend it, for example:
@@ -30,7 +40,7 @@ function PixiApp(width, height) {
 	this._applicationWidth = width;
 	this._applicationHeight = height;
 	this._backgroundColor = 0xffffff;
-	this._superSampling = 1;
+	this._antialias = false;
 	this.autoAttach = true;
 
 	setTimeout(this.onCheckReadyTimeout.bind(this), 0);
@@ -38,6 +48,7 @@ function PixiApp(width, height) {
 	this.contentScaler = new ContentScaler(this);
 }
 
+module.exports = global.PixiApp = PixiApp;
 PixiApp.prototype = Object.create(PIXI.Container.prototype);
 PixiApp.prototype.constructor = PixiApp;
 
@@ -79,7 +90,7 @@ PixiApp.prototype.setElementSize = function(width, height) {
 	this._explicitElementWidth = width;
 	this._explicitElementHeight = height;
 
-	this.sizeDirty = true;
+	this._sizeDirty = true;
 }
 
 /**
@@ -88,7 +99,7 @@ PixiApp.prototype.setElementSize = function(width, height) {
  * @private
  */
 PixiApp.prototype.onCheckReadyTimeout = function() {
-	if (this.attachedToElement)
+	if (this._view)
 		return;
 
 	if (!this.autoAttach)
@@ -99,7 +110,7 @@ PixiApp.prototype.onCheckReadyTimeout = function() {
 		return;
 	}
 
-	this.attachToElement(); //document.body);
+	this.attachToElement();
 }
 
 /**
@@ -112,7 +123,7 @@ PixiApp.prototype.onCheckReadyTimeout = function() {
 PixiApp.prototype.attachToElement = function(element) {
 	this.attachedToBody = false;
 
-	if (this.attachedToElement)
+	if (this._view)
 		throw new Error("Already attached!");
 
 	if (typeof element == "string") {
@@ -122,46 +133,26 @@ PixiApp.prototype.attachToElement = function(element) {
 	}
 
 	if (!element) {
+		element = document.body;
 		this.attachedToBody = true;
-
-		this.outerElement = document.createElement("div");
-		this.outerElement.style.left = "0";
-		this.outerElement.style.top = "0";
-		this.outerElement.style.position = "absolute";
-
-		this.outerElement.style.transformOrigin = "0 0 0";
-		this.outerElement.style.WebkitTransformOrigin = "0 0 0";
-		this.outerElement.style.MsTransformOrigin = "0 0 0";
-
-		document.body.appendChild(this.outerElement);
-
-		element = this.outerElement; //document.body;
 	}
 
-	//console.log("** attaching to element, w=" + element.clientWidth + " h=" + element.clientHeight);
-
 	this.containerElement = element;
-	this.attachedToElement = true;
-
-	var view;
 
 	if (navigator.isCocoonJS)
-		view = document.createElement('screencanvas');
+		this._view = document.createElement('screencanvas');
 
 	else
-		view = document.createElement('canvas');
+		this._view = document.createElement('canvas');
 
-	view.style.margin = 0;
-	view.style.padding = 0;
-	view.style.position = "absolute";
-	view.style.left = 0;
-	view.style.top = 0;
+	this._view.style.margin = 0;
+	this._view.style.padding = 0;
+	this._view.style.position = "absolute";
+	this._view.style.left = 0;
+	this._view.style.top = 0;
 
-	if (this.attachedToBody) { //this.containerElement == document.body) {
-		//this.attachedToBody = true;
-		//console.log("style: " + document.documentElement.style.height);
-
-		view.style.position = "fixed";
+	if (this.attachedToBody) {
+		this._view.style.position = "fixed";
 
 		document.body.style.margin = 0;
 		document.body.style.padding = 0;
@@ -171,14 +162,13 @@ PixiApp.prototype.attachToElement = function(element) {
 		window.onresize = this.onWindowResize.bind(this);
 	}
 
-	this.renderer = new PIXI.autoDetectRenderer(this.getElementWidth(), this.getElementHeight(), view);
-	this.renderer.backgroundColor = this._backgroundColor;
-	this.containerElement.appendChild(this.renderer.view);
+	this.containerElement.appendChild(this._view);
 
+	this.createRenderer();
 	this.updateContentScaler();
 
-	this.renderer.render(this.contentScaler);
-	this.sizeDirty = false;
+	this._renderer.render(this.contentScaler);
+	this._sizeDirty = false;
 
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
 	this.trigger("resize");
@@ -187,22 +177,32 @@ PixiApp.prototype.attachToElement = function(element) {
 }
 
 /**
+ * Create renderer.
+ * @method createRenderer
+ * @private
+ */
+PixiApp.prototype.createRenderer = function() {
+	if (!this._view)
+		throw new Error("Can't create renderer, no view yet.");
+
+	if (this._renderer)
+		this._renderer.destroy();
+
+	var options = {
+		view: this._view,
+		antialias: this._antialias
+	};
+
+	this._renderer = new PIXI.autoDetectRenderer(this.getElementWidth(), this.getElementHeight(), options);
+	this._renderer.backgroundColor = this._backgroundColor;
+}
+
+/**
  * Update the content scaler.
  * @method updateContentScaler
  * @private
  */
 PixiApp.prototype.updateContentScaler = function() {
-	if (this.attachedToBody) {
-		var scale = 1 / this._superSampling;
-		var transformString = "scale(" + scale + ")";
-
-		console.log("setting transform: " + transformString);
-
-		this.outerElement.style.transform = transformString;
-		this.outerElement.style.WebkitTransform = transformString;
-		this.outerElement.style.MsTransform = transformString;
-	}
-
 	this.contentScaler.setContentSize(this._applicationWidth, this._applicationHeight);
 	this.contentScaler.setScreenSize(this.getElementWidth(), this.getElementHeight());
 }
@@ -215,15 +215,15 @@ PixiApp.prototype.updateContentScaler = function() {
 PixiApp.prototype.onAnimationFrame = function(time) {
 	//console.log("render");
 
-	if (this.sizeDirty) {
+	if (this._sizeDirty) {
 		this.updateContentScaler();
-		this.renderer.resize(this.getElementWidth(), this.getElementHeight());
-		this.sizeDirty = false;
+		this._renderer.resize(this.getElementWidth(), this.getElementHeight());
+		this._sizeDirty = false;
 	}
 
 	this.trigger("frame", time);
 
-	this.renderer.render(this.contentScaler);
+	this._renderer.render(this.contentScaler);
 	//TWEEN.update(time);
 
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
@@ -235,7 +235,7 @@ PixiApp.prototype.onAnimationFrame = function(time) {
  * @private
  */
 PixiApp.prototype.onWindowResize = function() {
-	this.sizeDirty = true;
+	this._sizeDirty = true;
 	this.trigger("resize");
 }
 
@@ -246,7 +246,7 @@ PixiApp.prototype.onWindowResize = function() {
  */
 PixiApp.prototype.getElementHeight = function() {
 	if (this.attachedToBody)
-		return window.innerHeight * this._superSampling;
+		return window.innerHeight;
 
 	if (this._explicitElementHeight)
 		return this._explicitElementHeight;
@@ -261,7 +261,7 @@ PixiApp.prototype.getElementHeight = function() {
  */
 PixiApp.prototype.getElementWidth = function() {
 	if (this.attachedToBody)
-		return window.innerWidth * this._superSampling;
+		return window.innerWidth;
 
 	if (this._explicitElementWidth)
 		return this._explicitElementWidth;
@@ -279,7 +279,7 @@ Object.defineProperty(PixiApp.prototype, 'applicationWidth', {
 	},
 	set: function(value) {
 		this._applicationWidth = value;
-		this.sizeDirty = true;
+		this._sizeDirty = true;
 	}
 });
 
@@ -293,7 +293,7 @@ Object.defineProperty(PixiApp.prototype, 'applicationHeight', {
 	},
 	set: function(value) {
 		this._applicationHeight = value;
-		this.sizeDirty = true;
+		this._sizeDirty = true;
 	}
 });
 
@@ -412,10 +412,10 @@ Object.defineProperty(PixiApp.prototype, "matteColor", {
  */
 Object.defineProperty(PixiApp.prototype, "visibleRect", {
 	get: function() {
-		if (this.sizeDirty) {
+		if (this._sizeDirty) {
 			this.updateContentScaler();
-			this.renderer.resize(this.getElementWidth(), this.getElementHeight());
-			this.sizeDirty = false;
+			this._renderer.resize(this.getElementWidth(), this.getElementHeight());
+			this._sizeDirty = false;
 		}
 
 		return this.contentScaler.getVisibleRect();
@@ -436,22 +436,26 @@ Object.defineProperty(PixiApp.prototype, "backgroundColor", {
 		/*if (this.stage)
 			this.stage.setBackgroundColor(this._backgroundColor);*/
 
-		if (this.renderer)
-			this.renderer.backgroundColor = this._backgroundColor;
+		if (this._renderer)
+			this._renderer.backgroundColor = this._backgroundColor;
 	}
 });
 
 /**
- * The super sampling factor.
- * Default is 1, i.e. no super sampling.
- * @property superSampling
+ * Should antialias be used?
+ * This needs to be set befor the app is attached to the window.
+ * @property antialias
  */
-Object.defineProperty(PixiApp.prototype, "superSampling", {
+Object.defineProperty(PixiApp.prototype, "antialias", {
 	get: function() {
-		return this._superSampling;
+		return this._antialias;
 	},
 	set: function(value) {
-		this._superSampling = value;
-		this.sizeDirty = true;
+		this._antialias = value;
+
+		if (this._view) {
+			throw new Error("antialias needs to be set before attaching");
+			this.createRenderer();
+		}
 	}
 });

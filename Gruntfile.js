@@ -1,70 +1,88 @@
-var fs = require("fs");
-var AsyncSequence = require("./tools/utils/AsyncSequence");
-var qsub = require("qsub");
-var async = require("async");
-
 module.exports = function(grunt) {
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-browserify');
+	grunt.loadNpmTasks('grunt-contrib-yuidoc');
+	grunt.loadNpmTasks('grunt-ftpuploadtask');
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		concat: {
-			dist: {
-				src: [
-					"src/intro.js",
-					"src/EventDispatcher.js",
-					"src/ContentScaler.js",
-					"src/PixiApp.js",
-					"src/outro.js",
-				],
-				dest: "bin/pixiapp.js"
-			}
-		},
 
 		copy: {
 			pixi: {
 				src: "node_modules/pixi.js/bin/pixi.js",
 				dest: "demos/pixi.js"
 			}
+		},
+
+		browserify: {
+			pixiapp: {
+				options: {
+					external: [
+						"pixi.js"
+					],
+					require: [
+						[
+							"./src/PixiApp.js", {
+								expose: "PixiApp"
+							}
+						]
+					]
+				},
+
+				src: "src/PixiApp.js",
+				dest: "bin/pixiapp.js"
+			}
+		},
+
+		yuidoc: {
+			compile: {
+				name: '<%= pkg.name %>',
+				description: '<%= pkg.description %>',
+				version: '<%= pkg.version %>',
+				url: '<%= pkg.homepage %>',
+				options: {
+					paths: 'src',
+					outdir: 'doc',
+					"preprocessor": ["yuidoc-filter-tags", "yuidoc-die-on-warnings"],
+					"dont-include-tags": "internal"
+				}
+			}
+		},
+
+		ftpUploadTask: {
+			doc: {
+				options: {
+					user: "limikael",
+					password: process.env.ALTERVISTA_PASSWORD,
+					host: "ftp.limikael.altervista.org",
+					checksumfile: "_checksums/pixiappdoc.json"
+				},
+
+				files: [{
+					expand: true,
+					dest: "pixiappdoc",
+					src: ["**"],
+					cwd: "doc"
+				}]
+			},
+			demos: {
+				options: {
+					user: "limikael",
+					password: process.env.ALTERVISTA_PASSWORD,
+					host: "ftp.limikael.altervista.org",
+					checksumfile: "_checksums/pixiappdemos.json"
+				},
+
+				files: [{
+					expand: true,
+					dest: "pixiappdemos",
+					src: ["**"],
+					cwd: "demos"
+				}]
+			}
 		}
 	});
 
-	grunt.registerTask("test", function() {
-		var done = this.async();
-
-		async.series([
-
-			function(next) {
-				var job = qsub("./node_modules/.bin/jasmine-node")
-					.arg("--captureExceptions")
-					.arg("--verbose")
-					.arg("test");
-
-				job.expect(0).show();
-				job.run().then(next, grunt.fail.fatal);
-			},
-
-			function(next) {
-				done();
-			}
-		]);
-	});
-
-	grunt.registerTask("doc", function() {
-		var done = this.async();
-
-		var job = qsub("./node_modules/.bin/yuidoc");
-		job.arg("--configfile", "yuidoc.json", "src");
-		job.show().expect(0);
-
-		job.run().then(done, function(e) {
-			console.log(e);
-			grunt.fail.fatal(e);
-		});
-	});
-
-	grunt.registerTask("publish-doc", function() {
+	/*grunt.registerTask("publish-doc", function() {
 		var done = this.async();
 
 		if (fs.existsSync("doc.zip"))
@@ -110,14 +128,12 @@ module.exports = function(grunt) {
 				done();
 			}
 		]);
-	});
+	});*/
 
 	grunt.registerTask("default", function() {
 		console.log("Available tasks:");
 		console.log("");
-		console.log("  test          - Run unit tests.");
-		console.log("  concat        - Concat files.");
-		console.log("  doc           - Create docs.");
-		console.log("  publish-doc   - Upload docs.");
+		console.log("  browserify    - Create bin/pixiapp.js.");
+		console.log("  copy          - Copy pixi to make it available for demos.");
 	});
 };

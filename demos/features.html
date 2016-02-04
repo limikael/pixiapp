@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-	<script src="../node_modules/pixi.js/bin/pixi.js"></script>
+	<script src="pixi.js"></script>
 	<script src="../bin/pixiapp.js"></script>
 
 	<script>
 		function button(label, x, y, cb) {
-			var container = new PIXI.DisplayObjectContainer();
+			var container = new PIXI.Container();
 
 			var bg = new PIXI.Graphics();
 			bg.beginFill(0x202020);
@@ -43,9 +43,16 @@
 
 			gfx.beginFill(0xc080ff);
 			gfx.drawRect(10,10,app.applicationWidth-20,app.applicationHeight-20);
+
+			gfx.beginFill(0x000000);
+			gfx.drawRect(240,240,40,40);
+
+			gfx.beginFill(0xffffff);
+			gfx.drawCircle(260,260,15,15);
 		}
 
 		var app = new PixiApp(400,400);
+		app.antialias=true;
 		var gfx = new PIXI.Graphics();
 
 		var style={
@@ -144,5 +151,9 @@
 		button("toggle border",20,250,function() {
 			app.matte=!app.matte;
 		});
+
+		/*button("toggle antialias",240,250,function() {
+			app.antialias=!app.antialias;
+		});*/
 	</script>
 </html>
