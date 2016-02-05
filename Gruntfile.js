@@ -2,6 +2,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-yuidoc');
 	grunt.loadNpmTasks('grunt-ftpuploadtask');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),

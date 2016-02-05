@@ -414,8 +414,11 @@ Object.defineProperty(PixiApp.prototype, "visibleRect", {
 	get: function() {
 		if (this._sizeDirty) {
 			this.updateContentScaler();
-			this._renderer.resize(this.getElementWidth(), this.getElementHeight());
-			this._sizeDirty = false;
+
+			if (this._renderer) {
+				this._renderer.resize(this.getElementWidth(), this.getElementHeight());
+				this._sizeDirty = false;
+			}
 		}
 
 		return this.contentScaler.getVisibleRect();
