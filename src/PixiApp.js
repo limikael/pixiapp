@@ -39,8 +39,14 @@ function PixiApp(width, height) {
 
 	this._applicationWidth = width;
 	this._applicationHeight = height;
+	this._elementWidth = width;
+	this._elementHeight = height;
 	this._backgroundColor = 0xffffff;
 	this._antialias = false;
+	this._superSampling = 1;
+	this._viewElement = null;
+	this._outerElement = null;
+	this._parentElement = null;
 	this.autoAttach = true;
 
 	setTimeout(this.onCheckReadyTimeout.bind(this), 0);
@@ -78,28 +84,12 @@ PixiApp.NO_SCALE = ContentScaler.NO_SCALE;
 PixiApp.SHOW_ALL = ContentScaler.SHOW_ALL;
 
 /**
- * If the app is displayed in an html element, rather than
- * on the whole screen, we can use this function to set the
- * explicit width and height of the element. If we don't call
- * this funciton, the element size will be autodetected. However,
- * autodetection doesn't work 100% reliably if
- * the underlying element is resized.
- * @method setElementSize
- */
-PixiApp.prototype.setElementSize = function(width, height) {
-	this._explicitElementWidth = width;
-	this._explicitElementHeight = height;
-
-	this._sizeDirty = true;
-}
-
-/**
  * Check if it's time to attach ourselves.
  * @method onCheckReadyTimeout
  * @private
  */
 PixiApp.prototype.onCheckReadyTimeout = function() {
-	if (this._view)
+	if (this._viewElement)
 		return;
 
 	if (!this.autoAttach)
@@ -121,9 +111,7 @@ PixiApp.prototype.onCheckReadyTimeout = function() {
  * @param element {DOMElement} The element to attach to.
  */
 PixiApp.prototype.attachToElement = function(element) {
-	this.attachedToBody = false;
-
-	if (this._view)
+	if (this._viewElement)
 		throw new Error("Already attached!");
 
 	if (typeof element == "string") {
@@ -132,38 +120,49 @@ PixiApp.prototype.attachToElement = function(element) {
 			throw new Error("That's not an element!");
 	}
 
-	if (!element) {
-		element = document.body;
-		this.attachedToBody = true;
-	}
-
-	this.containerElement = element;
-
-	if (navigator.isCocoonJS)
-		this._view = document.createElement('screencanvas');
-
-	else
-		this._view = document.createElement('canvas');
-
-	this._view.style.margin = 0;
-	this._view.style.padding = 0;
-	this._view.style.position = "absolute";
-	this._view.style.left = 0;
-	this._view.style.top = 0;
-
-	if (this.attachedToBody) {
-		this._view.style.position = "fixed";
-
+	// If element specified, set up parentElement to be
+	// that element, otherwise set things up for attaching
+	// to full window.
+	if (element) {
+		this._attachedToBody = false;
+		this._parentElement = element;
+	} else {
+		this._attachedToBody = true;
+		this._parentElement = document.body;
 		document.body.style.margin = 0;
 		document.body.style.padding = 0;
 		document.body.style.overflow = "hidden";
-
 		document.body.onresize = this.onWindowResize.bind(this);
 		window.onresize = this.onWindowResize.bind(this);
 	}
 
-	this.containerElement.appendChild(this._view);
+	// Create the outer element, and attach it to the
+	// parent element.
+	this._outerElement = document.createElement("div");
+	this._outerElement.style.left = "0";
+	this._outerElement.style.top = "0";
+	this._outerElement.style.position = "relative";
+	this._outerElement.style.transformOrigin = "0 0 0";
+	this._outerElement.style.WebkitTransformOrigin = "0 0 0";
+	this._outerElement.style.MsTransformOrigin = "0 0 0";
+	this._parentElement.appendChild(this._outerElement);
 
+	// Create the view element, and attach it to the outer element.
+	if (navigator.isCocoonJS)
+		this._viewElement = document.createElement('screencanvas');
+
+	else
+		this._viewElement = document.createElement('canvas');
+
+	this._viewElement.style.margin = 0;
+	this._viewElement.style.padding = 0;
+	this._viewElement.style.position = "absolute";
+	this._viewElement.style.left = 0;
+	this._viewElement.style.top = 0;
+	this._outerElement.appendChild(this._viewElement);
+
+	// Create renderer, and update the content scaler for an
+	// initial render. Set up other things.
 	this.createRenderer();
 	this.updateContentScaler();
 
@@ -172,8 +171,6 @@ PixiApp.prototype.attachToElement = function(element) {
 
 	window.requestAnimationFrame(this.onAnimationFrame.bind(this));
 	this.trigger("resize");
-
-	//console.log("attached...");
 }
 
 /**
@@ -182,18 +179,18 @@ PixiApp.prototype.attachToElement = function(element) {
  * @private
  */
 PixiApp.prototype.createRenderer = function() {
-	if (!this._view)
+	if (!this._viewElement)
 		throw new Error("Can't create renderer, no view yet.");
 
 	if (this._renderer)
 		this._renderer.destroy();
 
 	var options = {
-		view: this._view,
+		view: this._viewElement,
 		antialias: this._antialias
 	};
 
-	this._renderer = new PIXI.autoDetectRenderer(this.getElementWidth(), this.getElementHeight(), options);
+	this._renderer = new PIXI.autoDetectRenderer(this.getRendererWidth(), this.getRendererHeight(), options);
 	this._renderer.backgroundColor = this._backgroundColor;
 }
 
@@ -203,8 +200,17 @@ PixiApp.prototype.createRenderer = function() {
  * @private
  */
 PixiApp.prototype.updateContentScaler = function() {
+	var scale = 1 / this._superSampling;
+	var transformString = "scale(" + scale + ")";
+
+	console.log("setting transform: " + transformString);
+
+	this._outerElement.style.transform = transformString;
+	this._outerElement.style.WebkitTransform = transformString;
+	this._outerElement.style.MsTransform = transformString;
+
 	this.contentScaler.setContentSize(this._applicationWidth, this._applicationHeight);
-	this.contentScaler.setScreenSize(this.getElementWidth(), this.getElementHeight());
+	this.contentScaler.setScreenSize(this.getRendererWidth(), this.getRendererHeight());
 }
 
 /**
@@ -217,7 +223,7 @@ PixiApp.prototype.onAnimationFrame = function(time) {
 
 	if (this._sizeDirty) {
 		this.updateContentScaler();
-		this._renderer.resize(this.getElementWidth(), this.getElementHeight());
+		this._renderer.resize(this.getRendererWidth(), this.getRendererHeight());
 		this._sizeDirty = false;
 	}
 
@@ -240,33 +246,29 @@ PixiApp.prototype.onWindowResize = function() {
 }
 
 /**
- * Get height of the element that we are attached to.
- * @method getElementHeight
+ * Get height that the PIXI renderer should be, taking HTML element and
+ * super sampling into consideration.
+ * @method getRendererHeight
  * @private
  */
-PixiApp.prototype.getElementHeight = function() {
-	if (this.attachedToBody)
-		return window.innerHeight;
+PixiApp.prototype.getRendererHeight = function() {
+	if (this._attachedToBody)
+		return window.innerHeight * this._superSampling;
 
-	if (this._explicitElementHeight)
-		return this._explicitElementHeight;
-
-	return this.containerElement.clientHeight;
+	return this._elementHeight * this._superSampling;
 }
 
 /**
- * Get height of the element that we are attached to.
- * @method getElementWidth
+ * Get width that the PIXI renderer should be, taking HTML element and
+ * super sampling into consideration.
+ * @method getRendererWidth
  * @private
  */
-PixiApp.prototype.getElementWidth = function() {
-	if (this.attachedToBody)
-		return window.innerWidth;
+PixiApp.prototype.getRendererWidth = function() {
+	if (this._attachedToBody)
+		return window.innerWidth * this._superSampling;
 
-	if (this._explicitElementWidth)
-		return this._explicitElementWidth;
-
-	return this.containerElement.clientWidth;
+	return this._elementWidth * this._superSampling;
 }
 
 /**
@@ -293,6 +295,50 @@ Object.defineProperty(PixiApp.prototype, 'applicationHeight', {
 	},
 	set: function(value) {
 		this._applicationHeight = value;
+		this._sizeDirty = true;
+	}
+});
+
+/**
+ * Set the element size, if the app is displayed in an html element, 
+ * rather than on the whole screen. This is a shorthand for setting
+ * the elementWidth and elementHeight properties
+ * @method setElementSize
+ */
+PixiApp.prototype.setElementSize = function(width, height) {
+	this._elementWidth = width;
+	this._elementHeight = height;
+	this._sizeDirty = true;
+}
+
+/**
+ * The width of the HTML element of the application.
+ * This property does not have any effect if the application is
+ * attached to the window.
+ * @property elementWidth
+ */
+Object.defineProperty(PixiApp.prototype, 'elementWidth', {
+	get: function() {
+		return this._elementWidth;
+	},
+	set: function(value) {
+		this._elementWidth = value;
+		this._sizeDirty = true;
+	}
+});
+
+/**
+ * The width of the HTML element of the application.
+ * This property does not have any effect if the application is
+ * attached to the window.
+ * @property elementHeight
+ */
+Object.defineProperty(PixiApp.prototype, 'elementHeight', {
+	get: function() {
+		return this._elementHeight;
+	},
+	set: function(value) {
+		this._elementHeight = value;
 		this._sizeDirty = true;
 	}
 });
@@ -416,7 +462,7 @@ Object.defineProperty(PixiApp.prototype, "visibleRect", {
 			this.updateContentScaler();
 
 			if (this._renderer) {
-				this._renderer.resize(this.getElementWidth(), this.getElementHeight());
+				this._renderer.resize(this.getRendererWidth(), this.getRendererHeight());
 				this._sizeDirty = false;
 			}
 		}
@@ -456,9 +502,24 @@ Object.defineProperty(PixiApp.prototype, "antialias", {
 	set: function(value) {
 		this._antialias = value;
 
-		if (this._view) {
+		if (this._viewElement) {
 			throw new Error("antialias needs to be set before attaching");
 			this.createRenderer();
 		}
+	}
+});
+
+/**
+ * The super sampling factor.
+ * Default is 1, i.e. no super sampling.
+ * @property superSampling
+ */
+Object.defineProperty(PixiApp.prototype, "superSampling", {
+	get: function() {
+		return this._superSampling;
+	},
+	set: function(value) {
+		this._superSampling = value;
+		this._sizeDirty = true;
 	}
 });

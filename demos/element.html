@@ -17,9 +17,18 @@
 			t.position.y=10;
 			app.addChild(t);
 
+			var c=new PIXI.Graphics();
+			c.beginFill(0x00ffff,1);
+			c.drawCircle(100,100,50);
+			app.addChild(c);
+
 			app.attachToElement("theelement");
 
-			app.setElementSize(300,300);
+			app.superSampling=1;
+
+			app.setElementSize(500,500);
+
+			console.log(app.visibleRect);
 		}
 	</script>
 	<body onload="run()">
