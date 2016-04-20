@@ -203,7 +203,10 @@ PixiApp.prototype.updateContentScaler = function() {
 	var scale = 1 / this._superSampling;
 	var transformString = "scale(" + scale + ")";
 
-	console.log("setting transform: " + transformString);
+	if (this._superSampling == 1)
+		transformString = null;
+
+	//console.log("setting transform: " + transformString);
 
 	this._outerElement.style.transform = transformString;
 	this._outerElement.style.WebkitTransform = transformString;
