@@ -609,7 +609,7 @@ PixiApp.prototype.updateContentScaler = function() {
 	if (this._superSampling == 1)
 		transformString = null;
 
-	console.log("setting transform: " + transformString);
+	//console.log("setting transform: " + transformString);
 
 	this._outerElement.style.transform = transformString;
 	this._outerElement.style.WebkitTransform = transformString;
@@ -929,5 +929,20 @@ Object.defineProperty(PixiApp.prototype, "superSampling", {
 		this._sizeDirty = true;
 	}
 });
+
+/**
+ * Find the PixiApp object where the child is attached.
+ * @method findAppParent
+ * @static
+ */
+PixiApp.findAppParent = function(child) {
+	if (!child)
+		throw new Error("Not attached to a PixiApp");
+
+	if (child instanceof PixiApp)
+		return child;
+
+	return PixiApp.findAppParent(child.parent);
+}
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./ContentScaler":2,"pixi.js":"pixi.js","yaed":1}]},{},["PixiApp"]);

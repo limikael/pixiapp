@@ -526,3 +526,18 @@ Object.defineProperty(PixiApp.prototype, "superSampling", {
 		this._sizeDirty = true;
 	}
 });
+
+/**
+ * Find the PixiApp object where the child is attached.
+ * @method findAppParent
+ * @static
+ */
+PixiApp.findAppParent = function(child) {
+	if (!child)
+		throw new Error("Not attached to a PixiApp");
+
+	if (child instanceof PixiApp)
+		return child;
+
+	return PixiApp.findAppParent(child.parent);
+}

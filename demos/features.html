@@ -31,6 +31,8 @@
 			container.hitArea=new PIXI.Rectangle(x,y,100,20);
 
 			app.addChild(container);
+
+			return container;
 		}
 
 		function draw() {
@@ -81,9 +83,11 @@
 			draw();
 		});
 
-		button("portrait",20,50,function() {
+		var b=button("portrait",20,50,function() {
 			app.applicationWidth=360;
 			app.applicationHeight=640;
+
+			//console.log(PixiApp.findAppParent(b));
 
 			draw();
 		});
